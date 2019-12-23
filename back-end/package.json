@@ -1,0 +1,35 @@
+{
+  "name": "examreg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HungPham1509/ExamReg.git"
+  },
+  "author": "Hung Pham",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HungPham1509/ExamReg/issues"
+  },
+  "homepage": "https://github.com/HungPham1509/ExamReg#readme",
+  "dependencies": {
+    "bcrypt": "3.0.6",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "exceljs": "^3.4.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.2",
+    "mysql2": "^2.0.0",
+    "nodemon": "^2.0.1",
+    "randomstring": "^1.1.5",
+    "sequelize": "^5.21.2",
+    "uuid": "^3.3.3"
+  }
+}
