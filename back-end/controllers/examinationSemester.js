@@ -5,6 +5,7 @@ const ExaminationShift = require('../models/ExaminationShift');
 const ExaminationShiftExaminationRoom = require('../models/ExaminationShiftExaminationRoom');
 const ExaminationShiftCourse = require('../models/ExaminationShiftCourse');
 const Course = require('../models/Course');
+const Student = require('../models/Student');
 const Sequelize = require('sequelize');
 
 exports.getAllExaminationSemesters = (req, res, next) => {
@@ -14,7 +15,7 @@ exports.getAllExaminationSemesters = (req, res, next) => {
     .then(result => {
         if(result.length <= 0) {
             return res.status(404).json({
-                message: 'Không tìm thấy ca thi'
+                message: 'Không tìm thấy kì thi'
             })
         }
         res.status(200).json({
@@ -115,6 +116,14 @@ exports.creatExaminationShift = (req, res, next) => {
                         {
                             start_time: {[Sequelize.Op.lte]: req.body.start_time},
                             end_time: {[Sequelize.Op.gte]: req.body.end_time}
+                        },
+                        {
+                            start_time: {[Sequelize.Op.lte]: req.body.end_time},
+                            end_time: {[Sequelize.Op.gte]: req.body.end_time}
+                        },
+                        {
+                            start_time: {[Sequelize.Op.gte]: req.body.start_time},
+                            start_time: {[Sequelize.Op.lte]: req.body.end_time}
                         }
                     ]
                 }
@@ -183,16 +192,14 @@ exports.creatExaminationShift = (req, res, next) => {
 }
 
 exports.getAllExaminationShifts = (req, res, next) => {
-    const page = req.query.page;
     ExaminationSemester.findOne({
         where: {uuid: req.params.examination_semester_uuid},
         attributes: ['uuid', 'year', 'semester'],
+        order: [[ExaminationShift, 'examination_date', 'ASC'], [ExaminationShift, 'start_time', 'ASC']],
         include: [
             {
                 model: ExaminationShift,
                 attributes: ['uuid', 'examination_date', 'start_time', 'end_time', 'examinationSemesterUuid'],
-                limit: 8,
-                offset: 8*page,
                 include: [
                     {
                         model: Course,
@@ -208,8 +215,8 @@ exports.getAllExaminationShifts = (req, res, next) => {
                         attributes: ['uuid', 'room_name', 'place', 'number_of_computers'],
                         through: {
                             model: ExaminationShiftExaminationRoom,
-                            attributes: [],
-                            as: 'room'
+                            attributes: ['number_of_computers_remaining'],
+                            as: 'status'
                         }
                     }
                 ]
@@ -276,81 +283,6 @@ exports.getExaminationShift = (req, res, next) => {
         });
     })
 }
-
-/*exports.editExaminationShift = (req, res, next) => {
-    ExaminationShift.findOne({
-        include: [{
-            model: ExaminationRoom,
-            through: {
-                model: ExaminationShiftExaminationRoom
-            },
-            where: {uuid: req.body.examination_room_uuid}
-        }],
-        where: {
-            
-            examination_date: req.body.examination_date,
-            [Sequelize.Op.or]: [
-                {
-                    start_time: {[Sequelize.Op.gte]: req.body.start_time},
-                    end_time: {[Sequelize.Op.lte]: req.body.end_time}
-                },
-                {
-                    start_time: {[Sequelize.Op.lte]: req.body.start_time},
-                    end_time: {[Sequelize.Op.gte]: req.body.end_time}
-                }
-            ]
-        }
-    })
-    .then(shift => {
-        if(shift) {
-            return res.status(409).json({
-                message: 'Phòng thi đã được sử dụng ở ca thi này',
-                shift: shift
-            })
-        }
-        else {
-            ExaminationShift.update(
-                {
-                    examination_date: req.body.examination_date,
-                    start_time: req.body.start_time,
-                    end_time: req.body.end_time
-                },
-                {
-                    where: {uuid: req.params.examination_shift_uuid}
-                }
-            )
-
-            ExaminationShiftCourse.update(
-                {
-                    courseUuid: req.body.course_uuid
-                },
-                {
-                    where: {examinationShiftUuid: req.params.examination_shift_uuid}
-                }
-            )
-
-            ExaminationShiftExaminationRoom.update(
-                {
-                    examinationRoomUuid: req.body.examination_room_uuid
-                },
-                {
-                    where: {examinationShiftUuid: req.params.examination_shift_uuid}
-                }
-            )
-
-            res.status(200).json({
-                message: 'Thay đổi thông tin ca thi thành công'
-            })
-        }
-    })
-    .catch(error => {
-        res.status(500).json({
-            error: error,
-            message: 'Có lỗi xảy ra'
-        });
-    })
-}
-*/
 
 exports.deleteExaminationShift = (req, res, next) => {
     ExaminationShift.destroy({

@@ -16,9 +16,16 @@ exports.login = (req, res, next) => {
                     })
                 }
                 if(result) {
+                    let userID;
+                    if(account.studentUuid) {
+                        userID = account.studentUuid
+                    }
+                    else if(account.adminUuid) {
+                        userID = account.adminUuid
+                    }
                     const token = jwt.sign({
                         username: account.username,
-                        uuid: account.uuid,
+                        uuid: userID,
                         role: account.role
                     },
                     'exam-register-web',

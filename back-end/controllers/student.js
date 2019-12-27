@@ -34,7 +34,7 @@ exports.getStudent = (req, res, next) => {
         },
         include: [{
             model: ModuleClass,
-            attributes: ['uuid', 'module_class_code', 'number_of_credits', 'lecturer_name'],
+            attributes: ['uuid', 'module_class_code', 'number_of_credits', 'lecturer_name', 'courseUuid'],
             through: {
                 model: StudentModuleClass,
                 as: 'condition',
@@ -49,7 +49,6 @@ exports.getStudent = (req, res, next) => {
             });
         }
         else {
-            console.log(student);
             res.status(200).json({
                 result: student
             })
@@ -86,7 +85,6 @@ exports.deleteStudent = (req, res, next) => {
             });
         }
         else {
-            console.log(student);
             res.status(200).json({
                 message: 'Xóa sinh viên thành công'
             })

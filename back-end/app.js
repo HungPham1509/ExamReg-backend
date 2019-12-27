@@ -7,6 +7,7 @@ const courseRoutes = require('./routes/course');
 const moduleClassRoutes = require('./routes/moduleClass');
 const studentRoutes = require('./routes/student');
 const examinationSemesterRoutes = require('./routes/examinationSemester');
+const registerRoutes = require('./routes/register');
 
 const app = express();
 app.use(bodyParser.json());
@@ -20,7 +21,8 @@ app.use('/', accountRoutes);
 app.use('/courses', courseRoutes);
 app.use('/courses/module-classes', moduleClassRoutes);
 app.use('/students', studentRoutes);
-app.use('/examinations', examinationSemesterRoutes)
+app.use('/examinations', examinationSemesterRoutes);
+app.use('/register', registerRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('not found');
