@@ -1,9 +1,9 @@
 const Course = require('../models/Course');
 const ModuleClass = require('../models/ModuleClass');
 
-
+// lấy toàn bộ học phần 
 exports.getAllCourse = (req, res, next) => {
-    const page = req.query.page
+    const page = req.query.page // lấy mỗi trang 4 học phần
     console.log(page)
     let lim, off;
     if(page == 100) {
@@ -55,6 +55,7 @@ exports.getAllCourse = (req, res, next) => {
     })
 }
 
+// lấy 1 course theo uuid
 exports.getCourse = (req, res, next) => {
     Course.findOne({ 
         where:{uuid: req.params.course_uuid},
@@ -98,6 +99,7 @@ exports.getCourse = (req, res, next) => {
         })
     })
 }
+
 
 exports.editCourse = (req, res, next) => {
     Course.update(

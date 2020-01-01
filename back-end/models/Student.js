@@ -22,7 +22,8 @@ const Student = connection.sequelize.define(
         },
         vnu_mail: {
             type: Sequelize.STRING(50),
-            unique: true
+            unique: true,
+            match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
         },
         class_code: {
             type: Sequelize.STRING(20)

@@ -4,7 +4,7 @@ const Course = require('../models/Course');
 const ModuleClass = require('../models/ModuleClass');
 const Student = require('../models/Student');
 const StudentModuleClass = require('../models/StudentModuleClass');
-
+// thêm lớp học phần
 exports.addModuleClass = (req, res, next) => {
     // đọc file excel: 8 dòng đầu là thông tin học phần và lớp học phần
     const wb = new exceljs.Workbook();
@@ -181,7 +181,7 @@ exports.addModuleClass = (req, res, next) => {
         })
     })
 }
-
+// lấy 1 học phần
 exports.getModuleClass = (req, res, next) => {
     ModuleClass.findOne({
         attributes: ['uuid', 'module_class_code', 'number_of_credits', 'lecturer_name', 'courseUuid'], 

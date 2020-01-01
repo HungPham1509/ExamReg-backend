@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
 
-
+// đăng nhập
 exports.login = (req, res, next) => {
     Account.findOne({where: {username: req.body.username}})
     .then(account => {
@@ -56,7 +56,7 @@ exports.login = (req, res, next) => {
     })
 }
 
-
+//Tạo tài khoản admin
 exports.createAdminAccount = (req, res, next) => {
     bcrypt.hash(req.body.password, 10, (err, hash) => {
         if(err) {

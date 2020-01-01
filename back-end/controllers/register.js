@@ -9,6 +9,7 @@ const StudentExaminationShift = require('../models/StudentExaminationShift');
 const Student = require('../models/Student');
 const Sequelize = require('sequelize');
 
+// lấy tất cả ca thi mà có môn thi thuộc những môn thi mà sinh học
 exports.getShiftsOfStudentCourses = (req, res, next) => {
     ExaminationShift.findAll({
         where: {examinationSemesterUuid: req.params.examination_semester_uuid},
@@ -52,7 +53,7 @@ exports.getShiftsOfStudentCourses = (req, res, next) => {
         });
     })
 }
-
+// đăng kí ca thi
 exports.registerShift = (req, res, next) => {
     ExaminationShift.findOne(
         {
@@ -110,7 +111,7 @@ exports.registerShift = (req, res, next) => {
         });
     })
 }
-
+// hủy ca thi đã đăng kí
 exports.deleteRegisteredShift = (req, res, next) => {
     StudentExaminationShift.findOne(
         {
@@ -172,7 +173,7 @@ exports.deleteRegisteredShift = (req, res, next) => {
         });
     })
 }
-
+// lấy toàn bộ các ca thi sinh viên đã đăng kí
 exports.getAllStudentRegisteredShift = (req, res, next) => {
     Student.findOne({
         where: {uuid: req.params.student_uuid},

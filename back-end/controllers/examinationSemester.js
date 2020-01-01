@@ -4,10 +4,11 @@ const ExaminationRoom = require('../models/ExaminationRoom');
 const ExaminationShift = require('../models/ExaminationShift');
 const ExaminationShiftExaminationRoom = require('../models/ExaminationShiftExaminationRoom');
 const ExaminationShiftCourse = require('../models/ExaminationShiftCourse');
+const StudentExaminationShift = require('../models/StudentExaminationShift');
 const Course = require('../models/Course');
 const Student = require('../models/Student');
 const Sequelize = require('sequelize');
-
+// lấy toàn bộ kì thi
 exports.getAllExaminationSemesters = (req, res, next) => {
     ExaminationSemester.findAll({
         attributes: ['uuid', 'year', 'semester']
@@ -29,7 +30,7 @@ exports.getAllExaminationSemesters = (req, res, next) => {
         });
     })
 }
-
+// tạo kì thi
 exports.createExaminationSemester = (req, res, next) => {
     ExaminationSemester.findOne({where: {year: req.body.year, semester: req.body.semester}})
     .then(result => {
@@ -58,7 +59,7 @@ exports.createExaminationSemester = (req, res, next) => {
         });
     })
 }
-
+// tạo phòng thi
 exports.createRoom = (req, res, next) => {
     ExaminationRoom.findOne({where: {room_name: req.body.room_name, place: req.body.place}})
     .then(result => {
@@ -88,7 +89,7 @@ exports.createRoom = (req, res, next) => {
         });
     })
 }
-
+// tạo ca thi
 exports.creatExaminationShift = (req, res, next) => {
     ExaminationRoom.findOne({ where:{room_name: req.body.room_name, place: req.body.place} })
     .then(room => {
@@ -190,7 +191,7 @@ exports.creatExaminationShift = (req, res, next) => {
     })
     
 }
-
+// lấy toàn bộ ca thi của 1 kì thi
 exports.getAllExaminationShifts = (req, res, next) => {
     ExaminationSemester.findOne({
         where: {uuid: req.params.examination_semester_uuid},
@@ -240,7 +241,7 @@ exports.getAllExaminationShifts = (req, res, next) => {
         });
     })
 }
-
+// lấy ca thi(bao gồm thông tin và danh sách sinh viên đăng kí)
 exports.getExaminationShift = (req, res, next) => {
     ExaminationShift.findOne({
         attributes: ['uuid', 'examination_date', 'start_time', 'end_time', 'examinationSemesterUuid'],
@@ -251,7 +252,8 @@ exports.getExaminationShift = (req, res, next) => {
                 attributes: ['uuid', 'course_code', 'course_name', 'institute', 'examine_method', 'examine_time'],
                 through: {
                     model: ExaminationShiftCourse,
-                    attributes: []
+                    attributes: [],
+                    as: 'course'
                 },
             },
             {
@@ -259,6 +261,15 @@ exports.getExaminationShift = (req, res, next) => {
                 attributes: ['uuid', 'room_name', 'place', 'number_of_computers'],
                 through: {
                     model: ExaminationShiftExaminationRoom,
+                    attributes: ['number_of_computers_remaining'],
+                    as: 'status'
+                }
+            },
+            {
+                model: Student,
+                attributes: ['uuid', 'fullname', 'student_code', 'class_name', 'birth_date', 'class_code', 'vnu_mail'],
+                through: {
+                    model: StudentExaminationShift,
                     attributes: []
                 }
             }
@@ -283,7 +294,7 @@ exports.getExaminationShift = (req, res, next) => {
         });
     })
 }
-
+// Xóa ca thi
 exports.deleteExaminationShift = (req, res, next) => {
     ExaminationShift.destroy({
         attributes: ['uuid', 'examination_date', 'start_time', 'end_time', 'examinationSemesterUuid'],

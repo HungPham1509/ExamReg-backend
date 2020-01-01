@@ -4,7 +4,7 @@ const Account = require('../models/Account');
 const StudentModuleClass = require('../models/StudentModuleClass');
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
-
+// lấy toàn bộ sinh viên
 exports.getAllStudents = (req, res, next) => {
     const page = req.query.page;
     Student.findAll({
@@ -25,7 +25,7 @@ exports.getAllStudents = (req, res, next) => {
         })
     })
 }
-
+// lấy 1 sinh viên
 exports.getStudent = (req, res, next) => {
     Student.findOne({
         attributes: ['uuid', 'fullname', 'student_code', 'class_name', 'birth_date', 'class_code', 'vnu_mail'],
@@ -61,34 +61,41 @@ exports.getStudent = (req, res, next) => {
         })
     })
 }
-
+// xóa sinh viên
 exports.deleteStudent = (req, res, next) => {
-    Student.destroy({
-        attributes: ['uuid', 'fullname', 'student_code', 'class_name', 'birth_date', 'class_code', 'vnu_mail'],
-        where: {
-            uuid: req.params.student_uuid
-        },
-        include: [{
-            model: ModuleClass,
-            attributes: ['uuid', 'module_class_code', 'number_of_credits', 'lecturer_name'],
-            through: {
-                model: StudentModuleClass,
-                as: 'condition',
-                attributes: ['status']
-            }
-        }]
+    Account.destroy({
+        where: {studentUuid: req.params.student_uuid}
     })
-    .then(student => {
-        if(!student) {
-            return res.status(404).json({
-                message: 'Not Found'
-            });
-        }
-        else {
-            res.status(200).json({
-                message: 'Xóa sinh viên thành công'
-            })
-        }
+    .then(result => {
+        Student.destroy({
+            attributes: ['uuid', 'fullname', 'student_code', 'class_name', 'birth_date', 'class_code', 'vnu_mail'],
+            where: {
+                uuid: req.params.student_uuid
+            },
+            include: [
+                {
+                    model: ModuleClass,
+                    attributes: ['uuid', 'module_class_code', 'number_of_credits', 'lecturer_name'],
+                    through: {
+                        model: StudentModuleClass,
+                        as: 'condition',
+                        attributes: ['status']
+                    }
+                }
+            ]
+        })
+        .then(student => {
+            if(!student) {
+                return res.status(404).json({
+                    message: 'Not Found'
+                });
+            }
+            else {
+                res.status(200).json({
+                    message: 'Xóa sinh viên thành công'
+                })
+            }
+        })
     })
     .catch(error => {
         res.status(500).json({
@@ -97,7 +104,7 @@ exports.deleteStudent = (req, res, next) => {
         })
     })
 } 
-
+// chỉnh sửa sinh viên
 exports.editStudent = (req, res, next) => {
     Student.update(
         {
@@ -131,7 +138,7 @@ exports.editStudent = (req, res, next) => {
         })
     })
 }
-
+// cấp tài khoản cho sinh viên
 exports.addStudentAccounts = (req, res, next) => {
     Student.findAll({
         attributes: ['uuid', 'student_code']
